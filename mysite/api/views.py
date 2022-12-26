@@ -7,7 +7,9 @@ from .serializers import *
 from rest_framework import filters
 
 
+# страница профиля
 class DetailUser(APIView):
+    # склейка информации о пользователе и заказанных товарах
     def get(self, request, pk):
         user = AdvUser.objects.filter(id=pk).get()
         orders = Order.objects.filter(user=pk).all()
@@ -16,6 +18,7 @@ class DetailUser(APIView):
         return Response({"user": serializer.data, "orders": serializer2.data})
 
 
+# регистрация (основная логика в сериалайзере)
 class SignUp(generics.CreateAPIView):
     queryset = AdvUser.objects.all()
     serializer_class = UserSignupSerializer
@@ -30,18 +33,21 @@ class SignUp(generics.CreateAPIView):
                         status=status.HTTP_201_CREATED, headers=headers)
 
 
+# все продукты
 class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
+    filter_backends = [filters.SearchFilter] # поиск
+    search_fields = ['name']  # поиск
 
 
+# один продукт
 class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductDetailSerializer
 
 
+# заказ продукта
 class CreateOrder(APIView):
     permission_classes = [IsAuthenticated]
 
